@@ -4,7 +4,7 @@ This utility helps to count software metrics and measurement based on source cod
 ## Features
 1. Count lines of code
 2. Count empty lines
-3. Count both physical and logic lines of code
+3. Count both physical and logical lines of code
 4. Count comment lines & comment level of code
 5. Cyclomatic complexity
 
