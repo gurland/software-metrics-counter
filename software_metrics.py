@@ -111,9 +111,9 @@ class SourceMetrics:
 
         return ccs
 
-    def get_the_most_cc_function(self) -> str:
+    def get_the_most_cc_function(self) -> (str, int):
         sorted_ccs = sorted(self.calculate_cyclomatic_complexity().items(), key=lambda complexity: -complexity[1])
         if sorted_ccs:
-            return f"{sorted_ccs[0][0]} {sorted_ccs[0][1]}"
+            return sorted_ccs[0]
         else:
-            return ""
+            return "", 0
