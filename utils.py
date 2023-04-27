@@ -23,6 +23,7 @@ def get_source_file_paths_to_analyze(sources_path: Path, directories: list[str],
     return file_paths_to_analyze
 
 
+# TODO: Refactor this analytical mess
 def render_repository_metrics(repository_metrics):
     headers = {
         "values": [
@@ -41,13 +42,42 @@ def render_repository_metrics(repository_metrics):
         "values": []
     }
 
+    total_values = {
+        "File Path": "",
+        "LOC": 0,
+        "Empty LOC": 0,
+        "Physical LOC": 0,
+        "Logical LOC": 0,
+        "Comment Lines": 0,
+        "Comment Level (F)": 0,
+        "Highest CC function": ("", 0)
+    }
+
     for header in headers["values"]:
-        row = []
+        col = []
 
         for file_path, metrics in repository_metrics.items():
-            row.append(metrics[header])
+            if header == "File Path":
+                col.append(file_path)
+                total_values[header] = "Total"
+            elif header == "Highest CC function":
+                if total_values[header][1] < metrics[header][1]:
+                    total_values[header] = metrics[header]
 
-        cells["values"].append(row)
+                col.append(" ".join(map(str, metrics[header])))
+            else:
+                col.append(metrics[header])
+                total_values[header] += metrics[header]
+
+        if header == "Highest CC function":
+            col.append(" ".join(map(str, total_values[header])))
+        elif header == "Comment Level (F)":
+            avg_comment_level = total_values["Comment Lines"] / total_values["LOC"]
+            col.append("Avg F: %.2f" % avg_comment_level)
+        else:
+            col.append(total_values[header])
+
+        cells["values"].append(col)
 
     fig = go.Figure(
         data=[
