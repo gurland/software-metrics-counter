@@ -10,10 +10,7 @@ class SourceMetrics:
     content: str
 
     def __init__(self, source_file_path: Union[Path, str]):
-        if type(source_file_path) == str:
-            self.path = Path(source_file_path)
-        elif type(source_file_path) == Path:
-            self.path = source_file_path
+        self.path = Path(source_file_path)
 
         with open(self.path, "r") as f:
             self.content = f.read()
@@ -53,7 +50,7 @@ class SourceMetrics:
     def _get_logical_line_count_in_node(node: ast.AST) -> int:
         count = 0
 
-        if isinstance(node, expr) or isinstance(node, ast.stmt):
+        if isinstance(node, ast.expr) or isinstance(node, ast.stmt):
             count += 1
 
         if not hasattr(node, "body"):
@@ -114,6 +111,9 @@ class SourceMetrics:
 
         return ccs
 
-    def get_the_most_cc_function(self) -> (str, int):
+    def get_the_most_cc_function(self) -> str:
         sorted_ccs = sorted(self.calculate_cyclomatic_complexity().items(), key=lambda complexity: -complexity[1])
-        return sorted_ccs[0]
+        if sorted_ccs:
+            return f"{sorted_ccs[0][0]} {sorted_ccs[0][1]}"
+        else:
+            return ""
